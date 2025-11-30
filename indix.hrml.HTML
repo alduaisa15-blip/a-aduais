@@ -2,36 +2,35 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>A.DUAIS - نظام الإيداعات</title>
 <style>
-body{font-family:'Segoe UI', Tahoma, sans-serif;background:#0b1a2b;color:#e6eef6;margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;}
-input,select,button{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:none;}
+body{font-family:'Segoe UI', Tahoma, sans-serif;background:#0b1a2b;color:#e6eef6;margin:0;padding:0;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;}
+input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:none;font-size:16px;}
 button{background:#06b6d4;color:#032;font-weight:600;cursor:pointer;}
 button:hover{background:#0891b2;}
-.login-card{background:#1e293b;padding:30px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.4);width:300px;text-align:center;}
-.app{display:none;flex-direction:column;align-items:center;padding:20px;max-width:900px;width:100%;}
-.header{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:20px;}
-.logo{font-size:28px;font-weight:700;color:#06b6d4;}
-.card{background:linear-gradient(180deg,#0e1d32,#0b1729);border-radius:12px;padding:20px;width:100%;margin-bottom:20px;box-shadow:0 8px 20px rgba(0,0,0,0.4);}
-.card h2{margin-top:0;color:#06b6d4;}
-table{width:100%;border-collapse:collapse;margin-top:10px;}
-th,td{padding:10px;border-bottom:1px solid #334155;text-align:right;}
-th{color:#94a3b8;background:#0e1d32;}
-.tag{padding:6px 10px;border-radius:8px;font-size:13px;}
+.login-card{background:#1e293b;padding:30px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.4);width:90%;max-width:360px;text-align:center;margin-top:20px;}
+.app{display:none;flex-direction:column;align-items:center;padding:10px;width:100%;max-width:600px;}
+.header{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:20px;flex-wrap:wrap;}
+.logo{font-size:24px;font-weight:700;color:#06b6d4;}
+.card{background:linear-gradient(180deg,#0e1d32,#0b1729);border-radius:12px;padding:15px;width:100%;margin-bottom:15px;box-shadow:0 8px 20px rgba(0,0,0,0.4);}
+.card h2{margin-top:0;color:#06b6d4;font-size:18px;}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px;}
+th,td{padding:8px;border-bottom:1px solid #334155;text-align:right;}
+th{color:#94a3b8;background:#0e1d32;font-size:14px;}
+.tag{padding:4px 8px;border-radius:6px;font-size:12px;}
 .income{background:#10b981;color:#0f1724;}
 .expense{background:#ef4444;color:#0f1724;}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:10px;}
-.stat-card{background:#13233f;padding:14px;border-radius:10px;text-align:center;}
-.stat-card h4{margin:0;color:#94a3b8;font-size:14px;}
-.stat-card p{margin:8px 0 0;font-size:18px;font-weight:700;color:#fff;}
-.action-btn{margin:0 2px;padding:4px 8px;font-size:12px;border-radius:6px;cursor:pointer;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px;}
+.stat-card{background:#13233f;padding:10px;border-radius:8px;text-align:center;}
+.stat-card h4{margin:0;color:#94a3b8;font-size:12px;}
+.stat-card p{margin:5px 0 0;font-size:16px;font-weight:700;color:#fff;}
+.action-btn{margin:0 2px;padding:4px 6px;font-size:12px;border-radius:6px;cursor:pointer;}
 .edit-btn{background:#facc15;color:#032;}
 .delete-btn{background:#ef4444;color:#fff;}
 </style>
 </head>
 <body>
-
 <div class="login-card" id="loginScreen">
 <h2>تسجيل الدخول</h2>
 <label>رقم الهاتف</label>
@@ -44,7 +43,7 @@ th{color:#94a3b8;background:#0e1d32;}
 <div class="app" id="app">
 <div class="header">
 <div class="logo">A.DUAIS</div>
-<div style="color:#94a3b8;font-size:16px;">نظام تسجيل الإيداعات والسحوبات</div>
+<div style="color:#94a3b8;font-size:14px;">نظام تسجيل الإيداعات والسحوبات</div>
 </div>
 
 <div class="card">
@@ -72,7 +71,7 @@ th{color:#94a3b8;background:#0e1d32;}
 <div class="card">
 <h2>قائمة الإيداعات</h2>
 <table>
-<thead><tr><th>التاريخ</th><th>الوصف</th><th>العملة</th><th>المبلغ</th><th>الإجراءات</th></tr></thead>
+<thead><tr><th>التاريخ</th><th>الوصف</th><th>العملة</th><th>المبلغ</th><th>المستخدم</th><th>الإجراءات</th></tr></thead>
 <tbody id="depositTable"></tbody>
 </table>
 </div>
@@ -80,22 +79,25 @@ th{color:#94a3b8;background:#0e1d32;}
 <div class="card">
 <h2>قائمة السحوبات</h2>
 <table>
-<thead><tr><th>التاريخ</th><th>الوصف</th><th>العملة</th><th>المبلغ</th><th>الإجراءات</th></tr></thead>
+<thead><tr><th>التاريخ</th><th>الوصف</th><th>العملة</th><th>المبلغ</th><th>المستخدم</th><th>الإجراءات</th></tr></thead>
 <tbody id="withdrawTable"></tbody>
 </table>
 </div>
-
 </div>
 
 <script>
 let transactions=[];
+let currentUser=null;
 function login(){
   const phone=document.getElementById('phone').value.trim();
   const pass=document.getElementById('password').value.trim();
-  if(phone==='775572778' && pass==='2030'){
+  if((phone==='775572778' && pass==='2030') || (phone==='ga' && pass==='3020')){
+    currentUser = phone;
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('app').style.display='flex';
-  } else {alert('رقم الهاتف أو كلمة المرور غير صحيحة');}
+  } else {
+    alert('بيانات الدخول غير صحيحة');
+  }
 }
 function addTransaction(){
  const type=document.getElementById('type').value;
@@ -103,7 +105,7 @@ function addTransaction(){
  const amount=parseFloat(document.getElementById('amount').value);
  const desc=document.getElementById('desc').value.trim();
  if(!amount||amount<=0){alert('أدخل مبلغ صالح');return;}
- const t={id:Date.now(),date:new Date().toLocaleString('ar-SA'),type,currency,amount,desc};
+ const t={id:Date.now(),date:new Date().toLocaleString('ar-SA'),type,currency,amount,desc,user: currentUser};
  transactions.push(t);
  renderTransactions();
  renderStats();
@@ -116,7 +118,7 @@ function renderTransactions(){
  depositBody.innerHTML=''; withdrawBody.innerHTML='';
  transactions.slice().reverse().forEach(t=>{
   const tr=document.createElement('tr');
-  tr.innerHTML=`<td>${t.date}</td><td>${t.desc}</td><td>${t.currency}</td><td>${t.amount}</td>
+  tr.innerHTML=`<td>${t.date}</td><td>${t.desc}</td><td>${t.currency}</td><td>${t.amount}</td><td>${t.user}</td>
   <td><button class='action-btn edit-btn' onclick='editTransaction(${t.id})'>تعديل</button>
   <button class='action-btn delete-btn' onclick='deleteTransaction(${t.id})'>حذف</button></td>`;
   if(t.type==='deposit') depositBody.appendChild(tr);
