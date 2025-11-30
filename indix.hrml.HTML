@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A.DUAIS - نظام الإيداعات</title>
+<style>
+body{font-family:'Segoe UI', Tahoma, sans-serif;background:#0b1a2b;color:#e6eef6;margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;}
+input,select,button{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:none;}
+button{background:#06b6d4;color:#032;font-weight:600;cursor:pointer;}
+button:hover{background:#0891b2;}
+.login-card{background:#1e293b;padding:30px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.4);width:300px;text-align:center;}
+.app{display:none;flex-direction:column;align-items:center;padding:20px;max-width:900px;width:100%;}
+.header{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:20px;}
+.logo{font-size:28px;font-weight:700;color:#06b6d4;}
+.card{background:linear-gradient(180deg,#0e1d32,#0b1729);border-radius:12px;padding:20px;width:100%;margin-bottom:20px;box-shadow:0 8px 20px rgba(0,0,0,0.4);}
+.card h2{margin-top:0;color:#06b6d4;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th,td{padding:10px;border-bottom:1px solid #334155;text-align:right;}
+th{color:#94a3b8;background:#0e1d32;}
+.tag{padding:6px 10px;border-radius:8px;font-size:13px;}
+.income{background:#10b981;color:#0f1724;}
+.expense{background:#ef4444;color:#0f1724;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:10px;}
+.stat-card{background:#13233f;padding:14px;border-radius:10px;text-align:center;}
+.stat-card h4{margin:0;color:#94a3b8;font-size:14px;}
+.stat-card p{margin:8px 0 0;font-size:18px;font-weight:700;color:#fff;}
+.action-btn{margin:0 2px;padding:4px 8px;font-size:12px;border-radius:6px;cursor:pointer;}
+.edit-btn{background:#facc15;color:#032;}
+.delete-btn{background:#ef4444;color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="login-card" id="loginScreen">
+<h2>تسجيل الدخول</h2>
+<label>رقم الهاتف</label>
+<input type="text" id="phone" placeholder="رقم الهاتف">
+<label>كلمة المرور</label>
+<input type="password" id="password" placeholder="كلمة المرور">
+<button onclick="login()">دخول</button>
+</div>
+
+<div class="app" id="app">
+<div class="header">
+<div class="logo">A.DUAIS</div>
+<div style="color:#94a3b8;font-size:16px;">نظام تسجيل الإيداعات والسحوبات</div>
+</div>
+
+<div class="card">
+<h2>إضافة عملية جديدة</h2>
+<label>النوع</label>
+<select id="type"><option value="deposit">إيداع</option><option value="withdraw">سحب</option></select>
+<label>العملة</label>
+<select id="currency"><option value="SAR">ريال سعودي (SAR)</option><option value="YER">ريال يمني (YER)</option></select>
+<label>المبلغ</label>
+<input type="number" id="amount" placeholder="0">
+<label>الوصف</label>
+<input type="text" id="desc" placeholder="مثال: دفعة من عميل">
+<button onclick="addTransaction()">حفظ العملية</button>
+</div>
+
+<div class="card stats-grid">
+<div class="stat-card"><h4>إجمالي الإيداعات SAR</h4><p id="totalDepositSAR">0</p></div>
+<div class="stat-card"><h4>إجمالي السحوبات SAR</h4><p id="totalWithdrawSAR">0</p></div>
+<div class="stat-card"><h4>الرصيد SAR</h4><p id="balanceSAR">0</p></div>
+<div class="stat-card"><h4>إجمالي الإيداعات YER</h4><p id="totalDepositYER">0</p></div>
+<div class="stat-card"><h4>إجمالي السحوبات YER</h4><p id="totalWithdrawYER">0</p></div>
+<div class="stat-card"><h4>الرصيد YER</h4><p id="balanceYER">0</p></div>
+</div>
+
+<div class="card">
+<h2>قائمة الإيداعات</h2>
+<table>
+<thead><tr><th>التاريخ</th><th>الوصف</th><th>العملة</th><th>المبلغ</th><th>الإجراءات</th></tr></thead>
+<tbody id="depositTable"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h2>قائمة السحوبات</h2>
+<table>
+<thead><tr><th>التاريخ</th><th>الوصف</th><th>العملة</th><th>المبلغ</th><th>الإجراءات</th></tr></thead>
+<tbody id="withdrawTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+let transactions=[];
+function login(){
+  const phone=document.getElementById('phone').value.trim();
+  const pass=document.getElementById('password').value.trim();
+  if(phone==='775572778' && pass==='2030'){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('app').style.display='flex';
+  } else {alert('رقم الهاتف أو كلمة المرور غير صحيحة');}
+}
+function addTransaction(){
+ const type=document.getElementById('type').value;
+ const currency=document.getElementById('currency').value;
+ const amount=parseFloat(document.getElementById('amount').value);
+ const desc=document.getElementById('desc').value.trim();
+ if(!amount||amount<=0){alert('أدخل مبلغ صالح');return;}
+ const t={id:Date.now(),date:new Date().toLocaleString('ar-SA'),type,currency,amount,desc};
+ transactions.push(t);
+ renderTransactions();
+ renderStats();
+ document.getElementById('amount').value='';
+ document.getElementById('desc').value='';
+}
+function renderTransactions(){
+ const depositBody=document.getElementById('depositTable');
+ const withdrawBody=document.getElementById('withdrawTable');
+ depositBody.innerHTML=''; withdrawBody.innerHTML='';
+ transactions.slice().reverse().forEach(t=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${t.date}</td><td>${t.desc}</td><td>${t.currency}</td><td>${t.amount}</td>
+  <td><button class='action-btn edit-btn' onclick='editTransaction(${t.id})'>تعديل</button>
+  <button class='action-btn delete-btn' onclick='deleteTransaction(${t.id})'>حذف</button></td>`;
+  if(t.type==='deposit') depositBody.appendChild(tr);
+  else withdrawBody.appendChild(tr);
+ });
+}
+function renderStats(){
+ const depSAR=transactions.filter(t=>t.type==='deposit'&&t.currency==='SAR').reduce((s,t)=>s+t.amount,0);
+ const wdrSAR=transactions.filter(t=>t.type==='withdraw'&&t.currency==='SAR').reduce((s,t)=>s+t.amount,0);
+ const balSAR=depSAR-wdrSAR;
+ document.getElementById('totalDepositSAR').innerText=depSAR;
+ document.getElementById('totalWithdrawSAR').innerText=wdrSAR;
+ document.getElementById('balanceSAR').innerText=balSAR;
+ const depYER=transactions.filter(t=>t.type==='deposit'&&t.currency==='YER').reduce((s,t)=>s+t.amount,0);
+ const wdrYER=transactions.filter(t=>t.type==='withdraw'&&t.currency==='YER').reduce((s,t)=>s+t.amount,0);
+ const balYER=depYER-wdrYER;
+ document.getElementById('totalDepositYER').innerText=depYER;
+ document.getElementById('totalWithdrawYER').innerText=wdrYER;
+ document.getElementById('balanceYER').innerText=balYER;
+}
+function deleteTransaction(id){
+ if(confirm('هل أنت متأكد من حذف هذه العملية؟')){
+  transactions=transactions.filter(t=>t.id!==id);
+  renderTransactions(); renderStats();
+ }
+}
+function editTransaction(id){
+ const t=transactions.find(t=>t.id===id);
+ const newDesc=prompt('تعديل الوصف:', t.desc);
+ const newAmount=parseFloat(prompt('تعديل المبلغ:', t.amount));
+ if(newDesc!==null && !isNaN(newAmount) && newAmount>0){
+  t.desc=newDesc; t.amount=newAmount;
+  renderTransactions(); renderStats();
+ }
+}
+</script>
+</body>
+</html>
